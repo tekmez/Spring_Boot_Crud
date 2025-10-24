@@ -27,15 +27,15 @@ public class TodoService implements ITodoService {
     }
 
     @Override
-    public TodoEntity createTodo(TodoEntity TodoEntity) {
-        return todoRepository.save(TodoEntity);
+    public TodoEntity createTodo(TodoEntity todoEntity) {
+        return todoRepository.save(todoEntity);
     }
 
     @Override
-    public TodoEntity updateTodoById(Long id, TodoEntity updateTodo) {
+    public TodoEntity updateTodoById(Long id, TodoEntity todoEntity) {
         TodoEntity todo = todoRepository.getReferenceById(id);
-        todo.setTitle(updateTodo.getTitle());
-        todo.setCompleted(updateTodo.isCompleted());
+        todo.setTitle(todoEntity.getTitle());
+        todo.setCompleted(todoEntity.isCompleted());
         return todoRepository.save(todo);
     }
 
