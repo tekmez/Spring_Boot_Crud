@@ -5,6 +5,7 @@ import com.tekmez.crud.model.dto.TodoDto;
 import com.tekmez.crud.model.entity.TodoEntity;
 import com.tekmez.crud.repository.TodoRepository;
 import com.tekmez.crud.util.TodoMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,32 +30,33 @@ public class TodoService implements ITodoService {
 
     @Override
     public TodoDto getTodoById(Long id) {
-        return  todoRepository.findById(id)
-                .map(TodoMapper::toDto)
-                .orElse(null);
+        TodoEntity entity = todoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Todo not found with id: " + id));
+        return TodoMapper.toDto(entity);
     }
 
     @Override
     public TodoDto createTodo(TodoDto todoDto) {
-        TodoEntity todo = new TodoEntity();
-        todo.setTitle(todoDto.getTitle());
-        todo.setCompleted(todoDto.isCompleted());
-        todoRepository.save(todo);
-        return TodoMapper.toDto(todo);
+        TodoEntity entity = TodoMapper.toEntity(todoDto);
+        TodoEntity saved = todoRepository.save(entity);
+        return TodoMapper.toDto(saved);
     }
 
     @Override
     public TodoDto updateTodoById(Long id, TodoDto todoDto) {
-        TodoEntity todo = todoRepository.getReferenceById(id);
-        todo.setTitle(todoDto.getTitle());
-        todo.setCompleted(todoDto.isCompleted());
-        TodoEntity savedEntity =  todoRepository.save(todo);
-        return TodoMapper.toDto(savedEntity);
+        TodoEntity entity = todoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Todo not found with id: " + id));
+        entity.setTitle(todoDto.getTitle());
+        entity.setCompleted(todoDto.isCompleted());
+        TodoEntity updated  =  todoRepository.save(entity);
+        return TodoMapper.toDto(updated);
     }
 
     @Override
     public boolean deleteTodoById(Long id) {
-        todoRepository.deleteById(id);
-        return false;
+        TodoEntity entity = todoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Todo not found with id: " + id));
+        todoRepository.delete(entity);
+        return true;
     }
 }

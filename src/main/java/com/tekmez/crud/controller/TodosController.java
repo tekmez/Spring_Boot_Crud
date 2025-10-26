@@ -4,7 +4,6 @@ import com.tekmez.crud.model.dto.TodoDto;
 import com.tekmez.crud.interfaces.ITodoService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,15 +22,12 @@ public class TodosController {
     @GetMapping
     public ResponseEntity<List<TodoDto>> getAllTodo(){
         List<TodoDto> todos = todoService.getAllTodos();
-        return ResponseEntity.status(HttpStatus.OK).body(todos);
+        return ResponseEntity.ok(todos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TodoDto> getTodoById(@PathVariable Long id){
         TodoDto todo = todoService.getTodoById(id);
-        if (todo == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
         return ResponseEntity.ok(todo);
     }
 
@@ -44,19 +40,13 @@ public class TodosController {
     @PutMapping("/update")
     public ResponseEntity<TodoDto> updateTodo(@RequestParam Long id, @Valid @RequestBody TodoDto updateTodo){
         TodoDto updated =  todoService.updateTodoById(id, updateTodo);
-        if (updated == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(updated);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTodo(@PathVariable Long id){
-        boolean deleted = todoService.deleteTodoById(id);
-        if (!deleted) {
-            return ResponseEntity.notFound().build(); // 404
-        }
-        return ResponseEntity.status(HttpStatus.OK).build();
+        todoService.deleteTodoById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
