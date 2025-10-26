@@ -27,8 +27,9 @@ public class TodosController {
     }
 
     @GetMapping("/{id}")
-    public TodoEntity getTodoById(@PathVariable Long id){
-        return todoService.getTodoById(id);
+    public TodoResponseDto getTodoById(@PathVariable Long id){
+        TodoEntity todo =  todoService.getTodoById(id);
+        return TodoResponseDto.fromEntity(todo);
     }
 
     @PostMapping("/create")
