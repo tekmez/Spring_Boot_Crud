@@ -1,11 +1,14 @@
 package com.tekmez.crud.service;
 
 import com.tekmez.crud.interfaces.ITodoService;
-import com.tekmez.crud.model.TodoEntity;
+import com.tekmez.crud.model.dto.TodoDto;
+import com.tekmez.crud.model.entity.TodoEntity;
 import com.tekmez.crud.repository.TodoRepository;
+import com.tekmez.crud.util.TodoMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TodoService implements ITodoService {
@@ -17,30 +20,41 @@ public class TodoService implements ITodoService {
     }
 
     @Override
-    public List<TodoEntity> getAllTodos() {
-        return todoRepository.findAll();
+    public List<TodoDto> getAllTodos() {
+        return todoRepository.findAll()
+                .stream()
+                .map(TodoMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public TodoEntity getTodoById(Long id) {
-        return todoRepository.getReferenceById(id);
+    public TodoDto getTodoById(Long id) {
+        return  todoRepository.findById(id)
+                .map(TodoMapper::toDto)
+                .orElse(null);
     }
 
     @Override
-    public TodoEntity createTodo(TodoEntity todoEntity) {
-        return todoRepository.save(todoEntity);
+    public TodoDto createTodo(TodoDto todoDto) {
+        TodoEntity todo = new TodoEntity();
+        todo.setTitle(todoDto.getTitle());
+        todo.setCompleted(todoDto.isCompleted());
+        todoRepository.save(todo);
+        return TodoMapper.toDto(todo);
     }
 
     @Override
-    public TodoEntity updateTodoById(Long id, TodoEntity todoEntity) {
+    public TodoDto updateTodoById(Long id, TodoDto todoDto) {
         TodoEntity todo = todoRepository.getReferenceById(id);
-        todo.setTitle(todoEntity.getTitle());
-        todo.setCompleted(todoEntity.isCompleted());
-        return todoRepository.save(todo);
+        todo.setTitle(todoDto.getTitle());
+        todo.setCompleted(todoDto.isCompleted());
+        TodoEntity savedEntity =  todoRepository.save(todo);
+        return TodoMapper.toDto(savedEntity);
     }
 
     @Override
-    public void deleteTodoById(Long id) {
+    public boolean deleteTodoById(Long id) {
         todoRepository.deleteById(id);
+        return false;
     }
 }
