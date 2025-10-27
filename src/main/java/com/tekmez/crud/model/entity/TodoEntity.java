@@ -1,17 +1,19 @@
 package com.tekmez.crud.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "todo")
 public class TodoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private boolean completed;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Many Todos belong to One User
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public TodoEntity(){};
     public TodoEntity(String title, boolean completed){
@@ -37,5 +39,9 @@ public class TodoEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
