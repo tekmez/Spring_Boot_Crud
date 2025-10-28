@@ -7,6 +7,7 @@ public class TodoMapper {
 
     public static TodoDto toDto (TodoEntity entity){
         TodoDto dto = new TodoDto();
+        dto.setId(entity.getId());
         dto.setTitle(entity.getTitle());
         dto.setCompleted(entity.isCompleted());
         return dto;
